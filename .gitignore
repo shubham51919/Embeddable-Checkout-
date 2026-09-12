@@ -1,0 +1,6 @@
+node_modules
+dist
+.DS_Store
+*.local
+apps/demo/public/embd-checkout.js
+apps/demo/public/embd-checkout.js.map

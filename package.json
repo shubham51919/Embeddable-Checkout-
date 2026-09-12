@@ -1,0 +1,16 @@
+{
+  "name": "embd-checkout",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run build -w @embd/sdk && concurrently -n sdk,pay,demo -c cyan,magenta,green \"npm run dev -w @embd/sdk\" \"npm run dev -w checkout\" \"npm run dev -w demo\"",
+    "build": "npm run build -w @embd/sdk && npm run build -w checkout && npm run build -w demo",
+    "test": "npm run test -w checkout"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

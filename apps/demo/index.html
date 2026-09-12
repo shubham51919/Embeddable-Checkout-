@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vellum — AI Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="top">
+      <span class="mark">Vellum</span>
+    </header>
+
+    <section class="hero">
+      <div class="hero-copy">
+        <h1>A copilot for every draft.</h1>
+        <p class="lede">
+          Vellum writes, edits, and ships copy with you. One workspace, usage
+          that scales, models that do not forget the brief. $29 a month.
+        </p>
+
+        <div class="buy-row">
+          <button type="button" id="buy">Subscribe — $29/mo</button>
+          <p class="aside">Billed monthly. Cancel anytime.</p>
+        </div>
+      </div>
+
+      <div class="chat" aria-hidden="true">
+        <div class="chat-mask">
+          <div class="chat-stream" id="chat-stream"></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="reviewer" aria-label="SDK event log">
+      <div class="reviewer-head">
+        <h2>SDK events</h2>
+        <p>This panel is for review. Not part of checkout SDK.</p>
+      </div>
+
+      <ul class="cards">
+        <li><code>4242 4242 4242 4242</code> succeeds</li>
+        <li><code>4000 0000 0000 0002</code> declines</li>
+        <li><code>4000 0000 0000 0341</code> fails once, then succeeds</li>
+      </ul>
+
+      <div class="reviewer-actions">
+        <button type="button" id="buy-again" class="ghost">Buy again (same button)</button>
+        <button type="button" id="buy-unknown" class="ghost">Unknown product</button>
+        <button type="button" id="clear-log" class="ghost">Clear log</button>
+      </div>
+
+      <ol id="log" class="log"></ol>
+    </aside>
+
+    <script src="/embd-checkout.js"></script>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
