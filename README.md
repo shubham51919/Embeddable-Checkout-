@@ -1,10 +1,49 @@
-# Tiny embeddable checkout
+# Embeddable checkout
 
-A checkout a stranger’s site can drop in: one script, one function, card details never touch the host page.
+one script, one function, card details never touch the host page.
 
-This is the take-home. Three pieces, no server.
+## Live demo
 
-## Run it
+- **Demo store (open this):** [https://embd-demo.vercel.app](https://embd-demo.vercel.app)
+- **Checkout host (iframe origin):** [https://embeddable-checkout-sdk.vercel.app](https://embeddable-checkout-sdk.vercel.app)
+- **Source:** [https://github.com/shubham51919/Embeddable-Checkout-](https://github.com/shubham51919/Embeddable-Checkout-)
+
+The demo page loads `embd-checkout.js`, which opens checkout in an iframe from the checkout host. Card details never touch the demo origin.
+
+## Add checkout to your site
+
+One script tag, then call `EmbdCheckout.open` from a button (or anywhere). The SDK paints a full-viewport iframe; your page never sees the card form.
+
+```html
+<script src="https://embd-demo.vercel.app/embd-checkout.js"></script>
+
+<button id="buy">Buy Pro — $29/mo</button>
+
+<script>
+  document.getElementById("buy").addEventListener("click", () => {
+    EmbdCheckout.open({
+      productId: "prod_demo_lifetime",
+      onSuccess: ({ sessionId }) => {
+        console.log("paid", sessionId);
+      },
+      onClose: ({ reason }) => {
+        console.log("closed", reason);
+      },
+      onError: ({ code, message }) => {
+        console.error(code, message);
+      },
+    });
+  });
+</script>
+```
+
+Notes:
+
+- `productId` is required. Demo catalog id: `prod_demo_lifetime` (Vellum Pro, $29/mo). Unknown ids fire `onError` with `unknown_product`.
+- Price comes from the checkout catalog, not from your page — hosts cannot underpay by passing a cheaper amount.
+- Self-host the script if you prefer: build with `VITE_CHECKOUT_ORIGIN` set to your checkout origin, then serve `embd-checkout.js` from your CDN. The origin is baked in at build time.
+
+## Run it locally
 
 ```bash
 npm install
@@ -18,13 +57,23 @@ npm test          # Luhn + the three test cards
 npm run build     # SDK script, checkout app, demo
 ```
 
-To point the SDK at a hosted checkout origin instead of localhost:
+## Deploy
+
+Two Vercel projects (two origins):
+
+1. **Checkout** — build `npm run build -w checkout`, output `apps/checkout/dist`  
+   Live: `https://embeddable-checkout-sdk.vercel.app`
+
+2. **Demo** — build with the checkout origin baked into the SDK:
 
 ```bash
-VITE_CHECKOUT_ORIGIN=https://your-checkout.example npm run build -w @embd/sdk
+VITE_CHECKOUT_ORIGIN=https://embeddable-checkout-sdk.vercel.app npm run build -w @embd/sdk && npm run build -w demo
 ```
 
-Then serve `apps/checkout/dist` at that origin and `apps/demo/dist` as the storefront. The demo page expects `/embd-checkout.js` next to it (the SDK build writes that file into `apps/demo/public`).
+Output: `apps/demo/dist`  
+Live: `https://embd-demo.vercel.app`
+
+The demo page expects `/embd-checkout.js` next to it (the SDK build writes that file into `apps/demo/public`).
 
 ## How the pieces talk
 
@@ -45,13 +94,6 @@ The brief’s success payload is `{ sessionId }`. Sending last4 (or brand, or em
 **2. Confirm on close.**
 
 Instant dismiss feels faster. Losing a half-typed card feels worse, and I did not want a confirm on every accidental overlay click. Compromise: empty form closes immediately. Once email or card has anything in it, checkout asks. The receipt does not ask — they already paid.
-
-## What I would explore next
-
-- Server-minted, signed checkout sessions so a random page cannot open `prod_demo_lifetime` with a stolen script tag. The catalog-on-the-checkout-origin trick stops price tampering; it does not stop unpaid product access.
-- 3DS / SCA, and a real processor behind the same iframe boundary.
-- Theme tokens issued by a dashboard, not by host JavaScript. Hosts that can inject CSS can phish.
-- An idempotency key on Pay so a double-click after a dropped response cannot charge twice. The UI already locks; the processor should too.
 
 ## Test cards
 
